@@ -58,11 +58,27 @@ class CourseService: ObservableObject {
             throw APIError.unauthorized
         }
         
-        let _: EmptyResponse = try await APIClient.shared.request(
-            endpoint: "/courses/\(courseId)/enroll",
-            method: "POST",
-            accessToken: token
-        )
+        do {
+            let _: EmptyResponse = try await APIClient.shared.request(
+                endpoint: "/courses/\(courseId)/enroll",
+                method: "POST",
+                accessToken: token
+            )
+            
+            // Track enrollment
+            if let course = courses.first(where: { $0.id == courseId }) {
+                AnalyticsService.shared.trackCourseEnrolled(
+                    courseId: courseId,
+                    courseTitle: course.title
+                )
+            }
+        } catch {
+            AnalyticsService.shared.trackError(error, context: [
+                "action": "enroll_course",
+                "course_id": courseId
+            ])
+            throw error
+        }
     }
     
     func loadEnrolledCourses() async {

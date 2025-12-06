@@ -58,6 +58,7 @@ struct SwagStoreView: View {
             }
             .navigationTitle("Swag Store")
             .task {
+                AnalyticsService.shared.trackScreen("swag_store")
                 await economyService.loadSwagItems()
             }
         }
@@ -117,6 +118,11 @@ struct SwagItemCard: View {
                         .cornerRadius(4)
                 } else {
                     Button("Buy") {
+                        AnalyticsService.shared.track("swag_purchase_button_tapped", properties: [
+                            "item_id": item.id,
+                            "item_name": item.name,
+                            "price": item.price
+                        ])
                         showPurchaseConfirmation = true
                     }
                     .buttonStyle(.borderedProminent)
@@ -135,7 +141,10 @@ struct SwagItemCard: View {
                     do {
                         try await EconomyService.shared.purchaseItem(itemId: item.id)
                     } catch {
-                        // Handle error
+                        AnalyticsService.shared.trackError(error, context: [
+                            "action": "purchase_swag",
+                            "item_id": item.id
+                        ])
                     }
                 }
             }

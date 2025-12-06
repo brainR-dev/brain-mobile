@@ -76,6 +76,10 @@ struct LessonView: View {
             NotesView(notes: $notes, lessonId: lessonId)
         }
         .task {
+            AnalyticsService.shared.trackScreen("lesson", properties: [
+                "lesson_id": lessonId,
+                "course_id": courseId
+            ])
             await loadLesson()
         }
     }
@@ -84,8 +88,21 @@ struct LessonView: View {
         isLoading = true
         do {
             lesson = try await lessonService.loadLesson(lessonId: lessonId)
+            
+            // Track lesson started
+            if let lesson = lesson {
+                AnalyticsService.shared.trackLessonStarted(
+                    courseId: courseId,
+                    lessonId: lessonId,
+                    lessonTitle: lesson.title
+                )
+            }
         } catch {
-            // Handle error
+            AnalyticsService.shared.trackError(error, context: [
+                "action": "load_lesson",
+                "lesson_id": lessonId,
+                "course_id": courseId
+            ])
         }
         isLoading = false
     }

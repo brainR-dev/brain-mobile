@@ -115,23 +115,88 @@ class APIClient {
                 return try decoder.decode(T.self, from: data)
                 
             case 401:
+                AnalyticsService.shared.trackError(
+                    APIError.unauthorized,
+                    context: [
+                        "endpoint": endpoint,
+                        "method": method,
+                        "status_code": httpResponse.statusCode
+                    ]
+                )
                 throw APIError.unauthorized
             case 400...499:
+                let errorMessage: String?
                 if let errorResponse = try? JSONDecoder().decode(APIResponse<EmptyResponse>.self, from: data) {
-                    throw APIError.serverError(httpResponse.statusCode, errorResponse.message)
+                    errorMessage = errorResponse.message
+                    AnalyticsService.shared.trackError(
+                        APIError.serverError(httpResponse.statusCode, errorMessage),
+                        context: [
+                            "endpoint": endpoint,
+                            "method": method,
+                            "status_code": httpResponse.statusCode,
+                            "error_message": errorMessage ?? "Unknown"
+                        ]
+                    )
+                    throw APIError.serverError(httpResponse.statusCode, errorMessage)
                 }
+                AnalyticsService.shared.trackError(
+                    APIError.serverError(httpResponse.statusCode, nil),
+                    context: [
+                        "endpoint": endpoint,
+                        "method": method,
+                        "status_code": httpResponse.statusCode
+                    ]
+                )
                 throw APIError.serverError(httpResponse.statusCode, nil)
             case 500...599:
-                throw APIError.serverError(httpResponse.statusCode, "Server error")
+                let serverError = APIError.serverError(httpResponse.statusCode, "Server error")
+                AnalyticsService.shared.trackError(
+                    serverError,
+                    context: [
+                        "endpoint": endpoint,
+                        "method": method,
+                        "status_code": httpResponse.statusCode,
+                        "error_type": "server_error"
+                    ]
+                )
+                throw serverError
             default:
+                AnalyticsService.shared.trackError(
+                    APIError.unknown,
+                    context: [
+                        "endpoint": endpoint,
+                        "method": method,
+                        "status_code": httpResponse.statusCode
+                    ]
+                )
                 throw APIError.unknown
             }
         } catch let error as APIError {
+            // Error already tracked above
             throw error
         } catch let error as DecodingError {
-            throw APIError.decodingError(error)
+            let decodingError = APIError.decodingError(error)
+            AnalyticsService.shared.trackError(
+                decodingError,
+                context: [
+                    "endpoint": endpoint,
+                    "method": method,
+                    "error_type": "decoding_error"
+                ]
+            )
+            throw decodingError
         } catch {
-            throw APIError.networkError(error)
+            let networkError = APIError.networkError(error)
+            AnalyticsService.shared.trackError(
+                networkError,
+                context: [
+                    "endpoint": endpoint,
+                    "method": method,
+                    "error_type": "network_error",
+                    "error_message": error.localizedDescription
+                ]
+            )
+            throw networkError
         }
     }
 }

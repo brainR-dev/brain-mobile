@@ -87,6 +87,7 @@ struct AITutorView: View {
                 }
             }
             .task {
+                AnalyticsService.shared.trackScreen("ai_tutor")
                 await aiService.loadPersonas()
                 if selectedPersona == nil, let firstPersona = aiService.personas.first {
                     selectedPersona = firstPersona
@@ -201,9 +202,19 @@ class AITutorService: ObservableObject {
                 body: ["message": content, "persona_id": personaId]
             )
             messages.append(response)
+            
+            // Track AI message
+            AnalyticsService.shared.trackAITutorMessage(
+                personaId: personaId,
+                messageLength: content.count
+            )
+            
             await loadQuota()
         } catch {
-            // Handle error
+            AnalyticsService.shared.trackError(error, context: [
+                "action": "send_ai_message",
+                "persona_id": personaId
+            ])
         }
     }
     
@@ -218,7 +229,9 @@ class AITutorService: ObservableObject {
             )
             self.messages = messages
         } catch {
-            // Handle error
+            AnalyticsService.shared.trackError(error, context: [
+                "action": "load_ai_messages"
+            ])
         }
     }
     
@@ -233,11 +246,14 @@ class AITutorService: ObservableObject {
             )
             self.quota = quota
         } catch {
-            // Handle error
+            AnalyticsService.shared.trackError(error, context: [
+                "action": "load_ai_quota"
+            ])
         }
     }
     
     func clearMessages() {
+        AnalyticsService.shared.track("ai_tutor_messages_cleared")
         messages = []
     }
 }

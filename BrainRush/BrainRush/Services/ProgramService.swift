@@ -31,7 +31,9 @@ class ProgramService: ObservableObject {
             )
             self.programs = programs
         } catch {
-            // Handle error
+            AnalyticsService.shared.trackError(error, context: [
+                "action": "load_programs"
+            ])
         }
     }
     
@@ -53,11 +55,27 @@ class ProgramService: ObservableObject {
             throw APIError.unauthorized
         }
         
-        let _: EmptyResponse = try await APIClient.shared.request(
-            endpoint: "/mobile/programs/\(programId)/enroll",
-            method: "POST",
-            accessToken: token
-        )
+        do {
+            let _: EmptyResponse = try await APIClient.shared.request(
+                endpoint: "/mobile/programs/\(programId)/enroll",
+                method: "POST",
+                accessToken: token
+            )
+            
+            // Track enrollment
+            if let program = programs.first(where: { $0.id == programId }) {
+                AnalyticsService.shared.track("program_enrolled", properties: [
+                    "program_id": programId,
+                    "program_name": program.name
+                ])
+            }
+        } catch {
+            AnalyticsService.shared.trackError(error, context: [
+                "action": "enroll_program",
+                "program_id": programId
+            ])
+            throw error
+        }
     }
     
     func loadEnrolledPrograms() async {

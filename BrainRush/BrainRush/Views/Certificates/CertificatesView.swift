@@ -49,6 +49,7 @@ struct CertificatesView: View {
             }
             .navigationTitle("Certificates")
             .task {
+                AnalyticsService.shared.trackScreen("certificates")
                 await loadCertificates()
             }
         }

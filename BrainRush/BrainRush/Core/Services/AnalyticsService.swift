@@ -345,4 +345,3 @@ class AnalyticsService: ObservableObject {
         #endif
     }
 }
-

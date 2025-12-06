@@ -69,6 +69,7 @@ struct BrainProfileView: View {
                 BrainProfileAssessmentView()
             }
             .task {
+                AnalyticsService.shared.trackScreen("brain_profile")
                 await loadBrainProfile()
             }
         }

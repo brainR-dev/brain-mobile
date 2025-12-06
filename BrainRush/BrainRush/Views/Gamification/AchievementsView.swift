@@ -61,6 +61,7 @@ struct AchievementsView: View {
             }
             .navigationTitle("Achievements")
             .task {
+                AnalyticsService.shared.trackScreen("achievements")
                 await gamificationService.loadAchievements()
             }
         }

@@ -26,6 +26,7 @@ struct ForumsView: View {
             }
             .navigationTitle("Forums")
             .task {
+                AnalyticsService.shared.trackScreen("forums")
                 await loadForums()
             }
         }
@@ -80,12 +81,20 @@ struct ForumThreadsView: View {
         .navigationTitle("Threads")
         .toolbar {
             ToolbarItem(placement: .navigationBarTrailing) {
-                Button(action: {}) {
+                Button(action: {
+                    AnalyticsService.shared.track("forum_thread_create_button_tapped", properties: [
+                        "forum_id": forumId
+                    ])
+                    // Show create thread sheet
+                }) {
                     Image(systemName: "plus")
                 }
             }
         }
         .task {
+            AnalyticsService.shared.trackScreen("forum_threads", properties: [
+                "forum_id": forumId
+            ])
             await loadThreads()
         }
     }
@@ -177,11 +186,17 @@ struct ThreadDetailView: View {
         .toolbar {
             ToolbarItem(placement: .navigationBarTrailing) {
                 Button("Reply") {
+                    AnalyticsService.shared.track("forum_reply_button_tapped", properties: [
+                        "thread_id": threadId
+                    ])
                     // Show reply sheet
                 }
             }
         }
         .task {
+            AnalyticsService.shared.trackScreen("forum_thread_detail", properties: [
+                "thread_id": threadId
+            ])
             await loadThread()
             await loadReplies()
         }
@@ -215,7 +230,13 @@ struct ReplyCard: View {
                 
                 Spacer()
                 
-                Button(action: {}) {
+                Button(action: {
+                    AnalyticsService.shared.track("forum_reply_upvote", properties: [
+                        "reply_id": reply.id,
+                        "thread_id": reply.threadId
+                    ])
+                    // Upvote reply
+                }) {
                     Image(systemName: "arrow.up")
                 }
                 .font(.caption)

@@ -27,7 +27,9 @@ class BrainProfileService: ObservableObject {
             )
             self.brainProfile = profile
         } catch {
-            // Handle error
+            AnalyticsService.shared.trackError(error, context: [
+                "action": "load_brain_profile"
+            ])
         }
     }
     
@@ -36,13 +38,26 @@ class BrainProfileService: ObservableObject {
             throw APIError.unauthorized
         }
         
-        let profile: BrainProfile = try await APIClient.shared.request(
-            endpoint: "/mobile/brain-profile/create",
-            method: "POST",
-            accessToken: token,
-            body: ["answers": answers]
-        )
-        self.brainProfile = profile
-        return profile
+        do {
+            let profile: BrainProfile = try await APIClient.shared.request(
+                endpoint: "/mobile/brain-profile/create",
+                method: "POST",
+                accessToken: token,
+                body: ["answers": answers]
+            )
+            self.brainProfile = profile
+            
+            // Track assessment completion
+            AnalyticsService.shared.track("brain_profile_assessment_completed", properties: [
+                "answers_count": answers.count
+            ])
+            
+            return profile
+        } catch {
+            AnalyticsService.shared.trackError(error, context: [
+                "action": "submit_brain_profile_assessment"
+            ])
+            throw error
+        }
     }
 }

@@ -66,16 +66,19 @@ struct ProfileSettingsView: View {
                 
                 Section("Data") {
                     Button("Export Data") {
+                        AnalyticsService.shared.track("data_export_requested")
                         // Export data
                     }
                     
                     Button("Delete Account", role: .destructive) {
+                        AnalyticsService.shared.track("delete_account_requested")
                         // Delete account
                     }
                 }
                 
                 Section {
                     Button("Sign Out", role: .destructive) {
+                        AnalyticsService.shared.track("sign_out_button_tapped")
                         Task {
                             try? await authService.signOut()
                         }
@@ -83,6 +86,9 @@ struct ProfileSettingsView: View {
                 }
             }
             .navigationTitle("Settings")
+            .task {
+                AnalyticsService.shared.trackScreen("profile_settings")
+            }
         }
     }
 }
@@ -104,9 +110,16 @@ struct EditProfileView: View {
         .toolbar {
             ToolbarItem(placement: .navigationBarTrailing) {
                 Button("Save") {
+                    AnalyticsService.shared.track("profile_updated", properties: [
+                        "has_name": !name.isEmpty,
+                        "has_bio": !bio.isEmpty
+                    ])
                     // Save profile
                 }
             }
+        }
+        .task {
+            AnalyticsService.shared.trackScreen("edit_profile")
         }
     }
 }
@@ -129,35 +142,106 @@ struct ChangePasswordView: View {
         .toolbar {
             ToolbarItem(placement: .navigationBarTrailing) {
                 Button("Save") {
+                    AnalyticsService.shared.track("password_change_requested")
                     // Change password
                 }
             }
+        }
+        .task {
+            AnalyticsService.shared.trackScreen("change_password")
         }
     }
 }
 
 struct EmailSettingsView: View {
+    @State private var courseUpdates = true
+    @State private var achievements = true
+    @State private var challenges = true
+    
     var body: some View {
         Form {
             Section("Email Notifications") {
-                Toggle("Course Updates", isOn: .constant(true))
-                Toggle("Achievement Notifications", isOn: .constant(true))
-                Toggle("Challenge Reminders", isOn: .constant(true))
+                Toggle("Course Updates", isOn: $courseUpdates)
+                    .onChange(of: courseUpdates) { newValue in
+                        AnalyticsService.shared.track("email_setting_changed", properties: [
+                            "setting": "course_updates",
+                            "enabled": newValue
+                        ])
+                    }
+                
+                Toggle("Achievement Notifications", isOn: $achievements)
+                    .onChange(of: achievements) { newValue in
+                        AnalyticsService.shared.track("email_setting_changed", properties: [
+                            "setting": "achievements",
+                            "enabled": newValue
+                        ])
+                    }
+                
+                Toggle("Challenge Reminders", isOn: $challenges)
+                    .onChange(of: challenges) { newValue in
+                        AnalyticsService.shared.track("email_setting_changed", properties: [
+                            "setting": "challenges",
+                            "enabled": newValue
+                        ])
+                    }
             }
         }
         .navigationTitle("Email Settings")
+        .task {
+            AnalyticsService.shared.trackScreen("email_settings")
+        }
     }
 }
 
 struct NotificationSettingsView: View {
+    @State private var enableNotifications = true
+    @State private var levelUp = true
+    @State private var achievementAlerts = true
+    @State private var challengeReminders = true
+    @State private var messages = true
+    
     var body: some View {
         Form {
             Section("Push Notifications") {
-                Toggle("Enable Notifications", isOn: .constant(true))
-                Toggle("Level Up", isOn: .constant(true))
-                Toggle("Achievements", isOn: .constant(true))
-                Toggle("Challenges", isOn: .constant(true))
-                Toggle("Messages", isOn: .constant(true))
+                Toggle("Enable Notifications", isOn: $enableNotifications)
+                    .onChange(of: enableNotifications) { newValue in
+                        AnalyticsService.shared.track("push_notification_setting_changed", properties: [
+                            "setting": "enable_notifications",
+                            "enabled": newValue
+                        ])
+                    }
+                
+                Toggle("Level Up", isOn: $levelUp)
+                    .onChange(of: levelUp) { newValue in
+                        AnalyticsService.shared.track("push_notification_setting_changed", properties: [
+                            "setting": "level_up",
+                            "enabled": newValue
+                        ])
+                    }
+                
+                Toggle("Achievements", isOn: $achievementAlerts)
+                    .onChange(of: achievementAlerts) { newValue in
+                        AnalyticsService.shared.track("push_notification_setting_changed", properties: [
+                            "setting": "achievements",
+                            "enabled": newValue
+                        ])
+                    }
+                
+                Toggle("Challenges", isOn: $challengeReminders)
+                    .onChange(of: challengeReminders) { newValue in
+                        AnalyticsService.shared.track("push_notification_setting_changed", properties: [
+                            "setting": "challenges",
+                            "enabled": newValue
+                        ])
+                    }
+                
+                Toggle("Messages", isOn: $messages)
+                    .onChange(of: messages) { newValue in
+                        AnalyticsService.shared.track("push_notification_setting_changed", properties: [
+                            "setting": "messages",
+                            "enabled": newValue
+                        ])
+                    }
             }
             
             Section("Quiet Hours") {
@@ -166,6 +250,9 @@ struct NotificationSettingsView: View {
             }
         }
         .navigationTitle("Notifications")
+        .task {
+            AnalyticsService.shared.trackScreen("notification_settings")
+        }
     }
 }
 
@@ -179,9 +266,21 @@ struct LearningPreferencesView: View {
                 VStack {
                     Text("Default Playback Speed: \(defaultPlaybackSpeed, specifier: "%.1f")x")
                     Slider(value: $defaultPlaybackSpeed, in: 0.5...2.0, step: 0.25)
+                        .onChange(of: defaultPlaybackSpeed) { newValue in
+                            AnalyticsService.shared.track("learning_preference_changed", properties: [
+                                "preference": "playback_speed",
+                                "value": newValue
+                            ])
+                        }
                 }
                 
                 Toggle("Autoplay Next Lesson", isOn: $autoplayEnabled)
+                    .onChange(of: autoplayEnabled) { newValue in
+                        AnalyticsService.shared.track("learning_preference_changed", properties: [
+                            "preference": "autoplay",
+                            "enabled": newValue
+                        ])
+                    }
             }
             
             Section("Downloads") {
@@ -190,9 +289,18 @@ struct LearningPreferencesView: View {
                     Text("HD").tag("HD")
                     Text("Full HD").tag("Full HD")
                 }
+                .onChange(of: "HD") { _ in
+                    AnalyticsService.shared.track("learning_preference_changed", properties: [
+                        "preference": "video_quality",
+                        "value": "HD"
+                    ])
+                }
             }
         }
         .navigationTitle("Learning Preferences")
+        .task {
+            AnalyticsService.shared.trackScreen("learning_preferences")
+        }
     }
 }
 
@@ -203,6 +311,12 @@ struct AppearanceSettingsView: View {
         Form {
             Section("Theme") {
                 Toggle("Dark Mode", isOn: $darkMode)
+                    .onChange(of: darkMode) { newValue in
+                        AnalyticsService.shared.track("appearance_setting_changed", properties: [
+                            "setting": "dark_mode",
+                            "enabled": newValue
+                        ])
+                    }
             }
             
             Section("Display") {
@@ -211,9 +325,18 @@ struct AppearanceSettingsView: View {
                     Text("Medium").tag("Medium")
                     Text("Large").tag("Large")
                 }
+                .onChange(of: "Medium") { _ in
+                    AnalyticsService.shared.track("appearance_setting_changed", properties: [
+                        "setting": "font_size",
+                        "value": "Medium"
+                    ])
+                }
             }
         }
         .navigationTitle("Appearance")
+        .task {
+            AnalyticsService.shared.trackScreen("appearance_settings")
+        }
     }
 }
 

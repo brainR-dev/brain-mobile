@@ -96,6 +96,9 @@ struct QuizView: View {
                 QuizResultsView(quizId: quizId)
             }
             .task {
+                AnalyticsService.shared.trackScreen("quiz", properties: [
+                    "quiz_id": quizId
+                ])
                 await loadQuiz()
                 startTimer()
             }

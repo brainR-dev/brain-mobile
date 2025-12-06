@@ -69,6 +69,7 @@ struct DashboardView: View {
                 await dashboardService.loadDashboard()
             }
             .task {
+                AnalyticsService.shared.trackScreen("dashboard")
                 if dashboardService.dashboardData == nil {
                     await dashboardService.loadDashboard()
                 }

@@ -27,12 +27,26 @@ class DeepLinkRouter {
     private init() {}
     
     func handleURL(_ url: URL) -> DeepLinkRoute? {
+        // Track deep link
+        let urlString = url.absoluteString
+        var routeString = "unknown"
+        
         // Try universal link first
         if let route = handleUniversalLink(url) {
+            routeString = String(describing: route)
+            AnalyticsService.shared.trackDeepLink(url: urlString, route: routeString)
             return route
         }
+        
         // Then try custom URL scheme
-        return handleCustomURL(url)
+        if let route = handleCustomURL(url) {
+            routeString = String(describing: route)
+            AnalyticsService.shared.trackDeepLink(url: urlString, route: routeString)
+            return route
+        }
+        
+        AnalyticsService.shared.trackDeepLink(url: urlString, route: routeString)
+        return nil
     }
     
     private func handleUniversalLink(_ url: URL) -> DeepLinkRoute? {

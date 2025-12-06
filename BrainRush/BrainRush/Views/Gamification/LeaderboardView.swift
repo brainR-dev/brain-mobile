@@ -54,6 +54,10 @@ struct LeaderboardView: View {
             }
             .navigationTitle("Leaderboard")
             .task {
+                AnalyticsService.shared.trackScreen("leaderboard", properties: [
+                    "type": selectedType,
+                    "timeframe": selectedTimeframe
+                ])
                 await gamificationService.loadLeaderboard(type: selectedType, timeframe: selectedTimeframe)
             }
             .onChange(of: selectedType) { _ in

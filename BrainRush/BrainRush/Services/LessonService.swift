@@ -28,16 +28,33 @@ class LessonService: ObservableObject {
         return lesson
     }
     
-    func markLessonComplete(lessonId: String) async throws {
+    func markLessonComplete(lessonId: String, courseId: String, lessonTitle: String, duration: Int? = nil) async throws {
         guard let token = AuthService.shared.getAccessToken() else {
             throw APIError.unauthorized
         }
         
-        let _: EmptyResponse = try await APIClient.shared.request(
-            endpoint: "/mobile/lessons/\(lessonId)/complete",
-            method: "POST",
-            accessToken: token
-        )
+        do {
+            let _: EmptyResponse = try await APIClient.shared.request(
+                endpoint: "/mobile/lessons/\(lessonId)/complete",
+                method: "POST",
+                accessToken: token
+            )
+            
+            // Track lesson completion
+            AnalyticsService.shared.trackLessonCompleted(
+                courseId: courseId,
+                lessonId: lessonId,
+                lessonTitle: lessonTitle,
+                duration: duration
+            )
+        } catch {
+            AnalyticsService.shared.trackError(error, context: [
+                "action": "complete_lesson",
+                "lesson_id": lessonId,
+                "course_id": courseId
+            ])
+            throw error
+        }
     }
     
     func saveNotes(lessonId: String, notes: String) async throws {

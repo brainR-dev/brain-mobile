@@ -75,6 +75,11 @@ struct XPCardView: View {
         .sheet(isPresented: $showLevelUp) {
             LevelUpCelebrationView(newLevel: xp.level, onDismiss: { showLevelUp = false })
         }
+        .onChange(of: xp.level) { newLevel in
+            // Track level up when level changes
+            AnalyticsService.shared.trackLevelUp(newLevel: newLevel, xp: xp.currentXP)
+            showLevelUp = true
+        }
     }
 }
 

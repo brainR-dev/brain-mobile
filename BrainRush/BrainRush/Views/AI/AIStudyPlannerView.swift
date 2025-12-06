@@ -39,11 +39,13 @@ struct AIStudyPlannerView: View {
                     Button("Generate") {
                         Task {
                             await plannerService.generateSchedule()
+                            AnalyticsService.shared.trackStudyPlanGenerated()
                         }
                     }
                 }
             }
             .task {
+                AnalyticsService.shared.trackScreen("study_planner")
                 await plannerService.loadSchedule()
             }
         }

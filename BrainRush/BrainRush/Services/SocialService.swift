@@ -26,7 +26,9 @@ class SocialService: ObservableObject {
             )
             self.forums = forums
         } catch {
-            // Handle error
+            AnalyticsService.shared.trackError(error, context: [
+                "action": "load_forums"
+            ])
         }
     }
     
@@ -41,7 +43,9 @@ class SocialService: ObservableObject {
             )
             self.studyGroups = groups
         } catch {
-            // Handle error
+            AnalyticsService.shared.trackError(error, context: [
+                "action": "load_study_groups"
+            ])
         }
     }
     
@@ -56,7 +60,9 @@ class SocialService: ObservableObject {
             )
             self.conversations = conversations
         } catch {
-            // Handle error
+            AnalyticsService.shared.trackError(error, context: [
+                "action": "load_conversations"
+            ])
         }
     }
 }

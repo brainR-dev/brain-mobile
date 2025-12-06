@@ -146,6 +146,9 @@ struct SignUpView: View {
         } message: {
             Text(authService.errorMessage ?? "An error occurred")
         }
+        .task {
+            AnalyticsService.shared.trackScreen("sign_up")
+        }
         .onSubmit {
             switch focusedField {
             case .email:
@@ -163,30 +166,54 @@ struct SignUpView: View {
     }
     
     private func signUp() {
+        AnalyticsService.shared.track("sign_up_button_tapped", properties: [
+            "method": "email"
+        ])
+        
         Task {
             do {
                 try await authService.signUp(email: email, password: password)
             } catch {
+                AnalyticsService.shared.trackError(error, context: [
+                    "action": "sign_up",
+                    "method": "email"
+                ])
                 showError = true
             }
         }
     }
     
     private func signUpWithGoogle() {
+        AnalyticsService.shared.track("sign_up_button_tapped", properties: [
+            "method": "google"
+        ])
+        
         Task {
             do {
                 try await authService.signInWithGoogle()
             } catch {
+                AnalyticsService.shared.trackError(error, context: [
+                    "action": "sign_up",
+                    "method": "google"
+                ])
                 showError = true
             }
         }
     }
     
     private func signUpWithApple() {
+        AnalyticsService.shared.track("sign_up_button_tapped", properties: [
+            "method": "apple"
+        ])
+        
         Task {
             do {
                 try await authService.signInWithApple()
             } catch {
+                AnalyticsService.shared.trackError(error, context: [
+                    "action": "sign_up",
+                    "method": "apple"
+                ])
                 showError = true
             }
         }

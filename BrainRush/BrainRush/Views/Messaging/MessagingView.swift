@@ -33,6 +33,7 @@ struct MessagingView: View {
                 }
             }
             .task {
+                AnalyticsService.shared.trackScreen("messages")
                 await loadConversations()
             }
         }
@@ -150,6 +151,7 @@ struct ChatView: View {
     private func sendMessage() {
         guard !messageText.isEmpty else { return }
         // Send message
+        AnalyticsService.shared.trackMessageSent(conversationId: conversationId)
         messageText = ""
     }
     

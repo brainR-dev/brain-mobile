@@ -36,6 +36,7 @@ struct StudyGroupsView: View {
                 CreateStudyGroupView()
             }
             .task {
+                AnalyticsService.shared.trackScreen("study_groups")
                 await loadGroups()
             }
         }

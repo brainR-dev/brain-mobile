@@ -34,14 +34,30 @@ class SearchService: ObservableObject {
             throw APIError.unauthorized
         }
         
-        let results: SearchResult = try await APIClient.shared.request(
-            endpoint: "/mobile/search?q=\(query.addingPercentEncoding(withAllowedCharacters: .urlQueryAllowed) ?? "")",
-            method: "GET",
-            accessToken: token
-        )
-        
-        addToHistory(query)
-        return results
+        do {
+            let results: SearchResult = try await APIClient.shared.request(
+                endpoint: "/mobile/search?q=\(query.addingPercentEncoding(withAllowedCharacters: .urlQueryAllowed) ?? "")",
+                method: "GET",
+                accessToken: token
+            )
+            
+            // Track search
+            let totalResults = results.courses.count + results.programs.count + (results.forums?.count ?? 0) + (results.users?.count ?? 0)
+            AnalyticsService.shared.trackSearch(
+                query: query,
+                resultsCount: totalResults,
+                filters: nil
+            )
+            
+            addToHistory(query)
+            return results
+        } catch {
+            AnalyticsService.shared.trackError(error, context: [
+                "action": "search",
+                "query": query
+            ])
+            throw error
+        }
     }
     
     private func addToHistory(_ query: String) {

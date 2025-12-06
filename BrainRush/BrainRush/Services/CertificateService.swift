@@ -31,7 +31,9 @@ class CertificateService: ObservableObject {
             )
             self.certificates = certificates
         } catch {
-            // Handle error
+            AnalyticsService.shared.trackError(error, context: [
+                "action": "load_certificates"
+            ])
         }
     }
     

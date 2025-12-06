@@ -71,6 +71,7 @@ struct TokenWalletView: View {
             }
             .navigationTitle("Wallet")
             .task {
+                AnalyticsService.shared.trackScreen("wallet")
                 await economyService.loadTokenBalance()
                 await loadTransactions()
             }

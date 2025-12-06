@@ -38,8 +38,24 @@ struct CoursesView: View {
                     Image(systemName: "magnifyingglass")
                         .foregroundColor(.secondary)
                     
-                    TextField("Search courses...", text: $searchText)
-                        .textFieldStyle(.plain)
+                TextField("Search courses...", text: $searchText)
+                    .textFieldStyle(.plain)
+                    .onChange(of: searchText) { newValue in
+                        if !newValue.isEmpty {
+                            // Track search as user types (debounced in real app)
+                            Task {
+                                let results = courseService.courses.filter { course in
+                                    course.title.localizedCaseInsensitiveContains(newValue) ||
+                                    course.description?.localizedCaseInsensitiveContains(newValue) == true
+                                }
+                                AnalyticsService.shared.trackSearch(
+                                    query: newValue,
+                                    resultsCount: results.count,
+                                    filters: nil
+                                )
+                            }
+                        }
+                    }
                     
                     if !searchText.isEmpty {
                         Button(action: { searchText = "" }) {
@@ -94,6 +110,7 @@ struct CoursesView: View {
                 await courseService.loadCourses()
             }
             .task {
+                AnalyticsService.shared.trackScreen("courses")
                 if courseService.courses.isEmpty {
                     await courseService.loadCourses()
                 }
@@ -292,10 +309,18 @@ struct CourseDetailView: View {
         guard let course = course else { return }
         Task {
             do {
+                AnalyticsService.shared.track("course_enroll_button_tapped", properties: [
+                    "course_id": course.id,
+                    "course_title": course.title
+                ])
+                
                 try await courseService.enrollInCourse(courseId: course.id)
                 isEnrolled = true
             } catch {
-                // Handle error
+                AnalyticsService.shared.trackError(error, context: [
+                    "action": "enroll_course",
+                    "course_id": course.id
+                ])
             }
         }
     }

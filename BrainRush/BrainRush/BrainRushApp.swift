@@ -23,6 +23,25 @@ struct BrainRushApp: App {
         }
     }()
 
+    init() {
+        // Initialize crash reporting first
+        _ = CrashReporter.shared
+        
+        // Initialize analytics on app launch
+        _ = AnalyticsService.shared
+        
+        // Initialize push notifications
+        Task {
+            await PushNotificationService.shared.requestAuthorization()
+        }
+        
+        // Initialize network monitoring
+        _ = NetworkMonitor.shared
+        
+        // Initialize app state tracking
+        _ = AppStateTracker.shared
+    }
+    
     var body: some Scene {
         WindowGroup {
             RootView()

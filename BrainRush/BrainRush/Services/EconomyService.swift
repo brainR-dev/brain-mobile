@@ -45,7 +45,9 @@ class EconomyService: ObservableObject {
             )
             self.transactions = transactions
         } catch {
-            // Handle error
+            AnalyticsService.shared.trackError(error, context: [
+                "action": "load_transactions"
+            ])
         }
     }
     
@@ -60,7 +62,9 @@ class EconomyService: ObservableObject {
             )
             self.swagItems = items
         } catch {
-            // Handle error
+            AnalyticsService.shared.trackError(error, context: [
+                "action": "load_swag_items"
+            ])
         }
     }
     
@@ -69,14 +73,41 @@ class EconomyService: ObservableObject {
             throw APIError.unauthorized
         }
         
-        let _: EmptyResponse = try await APIClient.shared.request(
-            endpoint: "/mobile/swag/\(itemId)/purchase",
-            method: "POST",
-            accessToken: token
-        )
+        // Get item details before purchase for tracking
+        let item = swagItems.first(where: { $0.id == itemId })
         
-        await loadTokenBalance()
-        await loadSwagItems()
+        do {
+            let _: EmptyResponse = try await APIClient.shared.request(
+                endpoint: "/mobile/swag/\(itemId)/purchase",
+                method: "POST",
+                accessToken: token
+            )
+            
+            // Track purchase
+            if let item = item {
+                AnalyticsService.shared.trackSwagPurchased(
+                    itemId: itemId,
+                    itemName: item.name,
+                    price: item.price,
+                    rarity: item.rarity
+                )
+                
+                AnalyticsService.shared.trackTokenSpent(
+                    amount: item.price,
+                    itemId: itemId,
+                    itemName: item.name
+                )
+            }
+            
+            await loadTokenBalance()
+            await loadSwagItems()
+        } catch {
+            AnalyticsService.shared.trackError(error, context: [
+                "action": "purchase_item",
+                "item_id": itemId
+            ])
+            throw error
+        }
     }
     
     func updateAvatar(items: [AvatarItem]) async throws {

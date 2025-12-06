@@ -42,6 +42,7 @@ struct ChallengesView: View {
             }
             .navigationTitle("Challenges")
             .task {
+                AnalyticsService.shared.trackScreen("challenges")
                 await gamificationService.loadChallenges()
             }
         }

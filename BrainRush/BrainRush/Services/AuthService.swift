@@ -54,59 +54,92 @@ class AuthService: ObservableObject {
     }
     
     func signUp(email: String, password: String) async throws {
+        AnalyticsService.shared.trackScreen("sign_up")
         isLoading = true
         errorMessage = nil
         defer { isLoading = false }
         
-        // TODO: Implement with actual Supabase SDK
-        // For now, simulate API call
-        try await Task.sleep(nanoseconds: 1_000_000_000) // 1 second delay
-        
-        // Create mock session
-        let userId = UUID().uuidString
-        let token = "mock_token_\(UUID().uuidString)"
-        
-        self.session = Session(
-            accessToken: token,
-            refreshToken: "refresh_\(token)",
-            expiresIn: 3600,
-            user: User(id: userId, email: email, createdAt: Date().ISO8601Format())
-        )
-        self.currentUser = self.session?.user
-        self.isAuthenticated = true
-        
-        // Store in Keychain
-        KeychainService.shared.saveAccessToken(token)
-        KeychainService.shared.saveUserId(userId)
-        KeychainService.shared.saveEmail(email)
+        do {
+            // TODO: Implement with actual Supabase SDK
+            // For now, simulate API call
+            try await Task.sleep(nanoseconds: 1_000_000_000) // 1 second delay
+            
+            // Create mock session
+            let userId = UUID().uuidString
+            let token = "mock_token_\(UUID().uuidString)"
+            
+            self.session = Session(
+                accessToken: token,
+                refreshToken: "refresh_\(token)",
+                expiresIn: 3600,
+                user: User(id: userId, email: email, createdAt: Date().ISO8601Format())
+            )
+            self.currentUser = self.session?.user
+            self.isAuthenticated = true
+            
+            // Store in Keychain
+            KeychainService.shared.saveAccessToken(token)
+            KeychainService.shared.saveUserId(userId)
+            KeychainService.shared.saveEmail(email)
+            
+            // Track analytics
+            AnalyticsService.shared.trackSignUp(method: "email")
+            AnalyticsService.shared.identify(userId: userId, properties: [
+                "email": email,
+                "sign_up_method": "email",
+                "created_at": Date().ISO8601Format()
+            ])
+        } catch {
+            AnalyticsService.shared.trackError(error, context: [
+                "action": "sign_up",
+                "method": "email"
+            ])
+            throw error
+        }
     }
     
     func signIn(email: String, password: String) async throws {
+        AnalyticsService.shared.trackScreen("sign_in")
         isLoading = true
         errorMessage = nil
         defer { isLoading = false }
         
-        // TODO: Implement with actual Supabase SDK
-        // For now, simulate API call
-        try await Task.sleep(nanoseconds: 1_000_000_000) // 1 second delay
-        
-        // Create mock session
-        let userId = UUID().uuidString
-        let token = "mock_token_\(UUID().uuidString)"
-        
-        self.session = Session(
-            accessToken: token,
-            refreshToken: "refresh_\(token)",
-            expiresIn: 3600,
-            user: User(id: userId, email: email, createdAt: Date().ISO8601Format())
-        )
-        self.currentUser = self.session?.user
-        self.isAuthenticated = true
-        
-        // Store in Keychain
-        KeychainService.shared.saveAccessToken(token)
-        KeychainService.shared.saveUserId(userId)
-        KeychainService.shared.saveEmail(email)
+        do {
+            // TODO: Implement with actual Supabase SDK
+            // For now, simulate API call
+            try await Task.sleep(nanoseconds: 1_000_000_000) // 1 second delay
+            
+            // Create mock session
+            let userId = UUID().uuidString
+            let token = "mock_token_\(UUID().uuidString)"
+            
+            self.session = Session(
+                accessToken: token,
+                refreshToken: "refresh_\(token)",
+                expiresIn: 3600,
+                user: User(id: userId, email: email, createdAt: Date().ISO8601Format())
+            )
+            self.currentUser = self.session?.user
+            self.isAuthenticated = true
+            
+            // Store in Keychain
+            KeychainService.shared.saveAccessToken(token)
+            KeychainService.shared.saveUserId(userId)
+            KeychainService.shared.saveEmail(email)
+            
+            // Track analytics
+            AnalyticsService.shared.trackSignIn(method: "email")
+            AnalyticsService.shared.identify(userId: userId, properties: [
+                "email": email,
+                "sign_in_method": "email"
+            ])
+        } catch {
+            AnalyticsService.shared.trackError(error, context: [
+                "action": "sign_in",
+                "method": "email"
+            ])
+            throw error
+        }
     }
     
     func signInWithGoogle() async throws {
@@ -133,12 +166,18 @@ class AuthService: ObservableObject {
         isLoading = true
         defer { isLoading = false }
         
+        // Track analytics
+        AnalyticsService.shared.trackSignOut()
+        
         // Clear Keychain
         KeychainService.shared.clearAll()
         
         self.session = nil
         self.currentUser = nil
         self.isAuthenticated = false
+        
+        // Reset analytics
+        AnalyticsService.shared.reset()
     }
     
     func resetPassword(email: String) async throws {

@@ -36,6 +36,9 @@ class DashboardService: ObservableObject {
             self.dashboardData = data
         } catch {
             self.errorMessage = error.localizedDescription
+            AnalyticsService.shared.trackError(error, context: [
+                "action": "load_dashboard"
+            ])
         }
     }
 }
