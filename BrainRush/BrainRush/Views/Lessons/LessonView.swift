@@ -12,6 +12,7 @@ struct LessonView: View {
     let lessonId: String
     let courseId: String
     
+    @StateObject private var lessonService = LessonService.shared
     @State private var lesson: Lesson?
     @State private var isLoading = false
     @State private var videoPlayer: AVPlayer?
@@ -81,7 +82,11 @@ struct LessonView: View {
     
     private func loadLesson() async {
         isLoading = true
-        // Load lesson details
+        do {
+            lesson = try await lessonService.loadLesson(lessonId: lessonId)
+        } catch {
+            // Handle error
+        }
         isLoading = false
     }
 }

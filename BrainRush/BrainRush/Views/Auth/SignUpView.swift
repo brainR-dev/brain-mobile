@@ -133,8 +133,8 @@ struct SignUpView: View {
             // Sign In Link
             HStack {
                 Text("Already have an account?")
-                Button("Sign In") {
-                    // Navigate to sign in
+                NavigationLink("Sign In") {
+                    SignInView()
                 }
                 .foregroundColor(.blue)
             }

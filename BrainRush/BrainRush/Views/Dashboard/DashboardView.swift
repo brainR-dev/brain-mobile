@@ -10,6 +10,7 @@ import SwiftUI
 struct DashboardView: View {
     @StateObject private var dashboardService = DashboardService.shared
     @StateObject private var authService = AuthService.shared
+    @StateObject private var gamificationService = GamificationService.shared
     
     var body: some View {
         NavigationView {
@@ -19,7 +20,13 @@ struct DashboardView: View {
                         ProgressView()
                             .frame(maxWidth: .infinity)
                             .padding()
-                    } else if let data = dashboardService.dashboardData {
+                    } else                     if let data = dashboardService.dashboardData {
+                        // XP Card
+                        if let xp = gamificationService.userXP {
+                            XPCardView(xp: xp)
+                                .padding(.horizontal)
+                        }
+                        
                         // Quick Stats
                         QuickStatsView(stats: data.quickStats)
                             .padding(.horizontal)
@@ -65,6 +72,7 @@ struct DashboardView: View {
                 if dashboardService.dashboardData == nil {
                     await dashboardService.loadDashboard()
                 }
+                await gamificationService.loadUserXP()
             }
         }
     }
@@ -162,25 +170,28 @@ struct ContinueLearningCard: View {
             Text("Continue Learning")
                 .font(.headline)
             
-            VStack(alignment: .leading, spacing: 8) {
-                Text(continueLearning.courseTitle)
-                    .font(.subheadline)
-                    .fontWeight(.semibold)
-                
-                Text(continueLearning.lessonTitle)
-                    .font(.caption)
-                    .foregroundColor(.secondary)
-                
-                ProgressView(value: continueLearning.progress)
-                    .tint(.blue)
-                
-                Text("\(Int(continueLearning.progress * 100))% complete")
-                    .font(.caption)
-                    .foregroundColor(.secondary)
+            NavigationLink(destination: LessonView(lessonId: continueLearning.lessonId, courseId: continueLearning.courseId)) {
+                VStack(alignment: .leading, spacing: 8) {
+                    Text(continueLearning.courseTitle)
+                        .font(.subheadline)
+                        .fontWeight(.semibold)
+                    
+                    Text(continueLearning.lessonTitle)
+                        .font(.caption)
+                        .foregroundColor(.secondary)
+                    
+                    ProgressView(value: continueLearning.progress)
+                        .tint(.blue)
+                    
+                    Text("\(Int(continueLearning.progress * 100))% complete")
+                        .font(.caption)
+                        .foregroundColor(.secondary)
+                }
+                .padding()
+                .background(Color(.systemBackground))
+                .cornerRadius(12)
             }
-            .padding()
-            .background(Color(.systemBackground))
-            .cornerRadius(12)
+            .buttonStyle(.plain)
         }
         .padding()
         .background(Color(.systemGray6))

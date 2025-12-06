@@ -309,27 +309,36 @@ struct CourseSectionView: View {
             Text(section.title)
                 .font(.headline)
             
-            if let lessons = section.lessons {
-                ForEach(lessons) { lesson in
-                    HStack {
-                        Image(systemName: iconForLessonType(lesson.type))
-                            .foregroundColor(.blue)
-                            .frame(width: 24)
-                        
-                        Text(lesson.title)
-                            .font(.subheadline)
-                        
-                        Spacer()
-                        
-                        if let duration = lesson.duration {
-                            Text("\(duration)m")
-                                .font(.caption)
-                                .foregroundColor(.secondary)
-                        }
-                    }
-                    .padding(.vertical, 4)
-                }
-            }
+                            if let lessons = section.lessons {
+                                ForEach(lessons) { lesson in
+                                    NavigationLink(destination: LessonView(lessonId: lesson.id, courseId: lesson.courseId)) {
+                                        HStack {
+                                            Image(systemName: iconForLessonType(lesson.type))
+                                                .foregroundColor(.blue)
+                                                .frame(width: 24)
+                                            
+                                            Text(lesson.title)
+                                                .font(.subheadline)
+                                            
+                                            Spacer()
+                                            
+                                            if let duration = lesson.duration {
+                                                Text("\(duration)m")
+                                                    .font(.caption)
+                                                    .foregroundColor(.secondary)
+                                            }
+                                            
+                                            if lesson.isCompleted == true {
+                                                Image(systemName: "checkmark.circle.fill")
+                                                    .foregroundColor(.green)
+                                                    .font(.caption)
+                                            }
+                                        }
+                                        .padding(.vertical, 4)
+                                    }
+                                    .buttonStyle(.plain)
+                                }
+                            }
         }
         .padding()
         .background(Color(.systemGray6))

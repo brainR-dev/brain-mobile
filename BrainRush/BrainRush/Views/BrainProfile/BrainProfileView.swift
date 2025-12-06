@@ -8,8 +8,12 @@
 import SwiftUI
 
 struct BrainProfileView: View {
-    @State private var brainProfile: BrainProfile?
+    @StateObject private var brainProfileService = BrainProfileService.shared
     @State private var showAssessment = false
+    
+    private var brainProfile: BrainProfile? {
+        brainProfileService.brainProfile
+    }
     
     var body: some View {
         NavigationView {
@@ -71,7 +75,7 @@ struct BrainProfileView: View {
     }
     
     private func loadBrainProfile() async {
-        // Load brain profile
+        await brainProfileService.loadBrainProfile()
     }
 }
 

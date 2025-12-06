@@ -26,11 +26,12 @@ struct BrainRushApp: App {
     var body: some Scene {
         WindowGroup {
             RootView()
+                .environmentObject(AuthService.shared)
+                .environmentObject(NavigationCoordinator.shared)
+                .environment(\.appEnvironment, AppEnvironment.shared)
                 .onOpenURL { url in
                     // Handle deep links
-                    if let route = DeepLinkRouter.shared.handleUniversalLink(url) ?? DeepLinkRouter.shared.handleCustomURL(url) {
-                        // Navigate to route (would need navigation state management)
-                    }
+                    DeepLinkRouter.shared.handleURL(url)
                 }
         }
         .modelContainer(sharedModelContainer)

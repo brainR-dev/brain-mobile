@@ -9,10 +9,12 @@ import SwiftUI
 
 struct QuizView: View {
     let quizId: String
+    @StateObject private var quizService = QuizService.shared
     @State private var quiz: Quiz?
     @State private var currentQuestionIndex = 0
     @State private var answers: [String: String] = [:]
     @State private var showResults = false
+    @State private var quizResult: QuizResult?
     @State private var timeRemaining: Int?
     
     var currentQuestion: QuizQuestion? {
@@ -101,7 +103,11 @@ struct QuizView: View {
     }
     
     private func loadQuiz() async {
-        // Load quiz
+        do {
+            quiz = try await quizService.loadQuiz(quizId: quizId)
+        } catch {
+            // Handle error
+        }
     }
     
     private func startTimer() {
@@ -115,8 +121,16 @@ struct QuizView: View {
     }
     
     private func submitQuiz() {
-        // Submit quiz
-        showResults = true
+        Task {
+            do {
+                guard let quiz = quiz else { return }
+                let result = try await quizService.submitQuiz(quizId: quiz.id, answers: answers)
+                quizResult = result
+                showResults = true
+            } catch {
+                // Handle error
+            }
+        }
     }
 }
 

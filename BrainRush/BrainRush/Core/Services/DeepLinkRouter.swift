@@ -26,7 +26,16 @@ class DeepLinkRouter {
     
     private init() {}
     
-    func handleUniversalLink(_ url: URL) -> DeepLinkRoute? {
+    func handleURL(_ url: URL) -> DeepLinkRoute? {
+        // Try universal link first
+        if let route = handleUniversalLink(url) {
+            return route
+        }
+        // Then try custom URL scheme
+        return handleCustomURL(url)
+    }
+    
+    private func handleUniversalLink(_ url: URL) -> DeepLinkRoute? {
         guard url.host == "brainrash.com" else { return nil }
         
         let pathComponents = url.pathComponents.filter { $0 != "/" }

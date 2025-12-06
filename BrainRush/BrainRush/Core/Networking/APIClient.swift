@@ -78,11 +78,24 @@ class APIClient {
         }
         
         do {
+            let startTime = Date()
             let (data, response) = try await session.data(for: request)
+            let duration = Date().timeIntervalSince(startTime) * 1000 // milliseconds
             
             guard let httpResponse = response as? HTTPURLResponse else {
+                AnalyticsService.shared.trackError(APIError.unknown, context: [
+                    "endpoint": endpoint,
+                    "method": method
+                ])
                 throw APIError.unknown
             }
+            
+            // Track API performance
+            AnalyticsService.shared.trackPerformance(
+                metricName: "api_request",
+                value: duration,
+                unit: "ms"
+            )
             
             // Handle status codes
             switch httpResponse.statusCode {

@@ -23,7 +23,9 @@ struct RootView: View {
                 }
             } else {
                 // Authentication flow
-                SignInView()
+                NavigationView {
+                    SignInView()
+                }
             }
         }
         .task {

@@ -8,8 +8,12 @@
 import SwiftUI
 
 struct CertificatesView: View {
-    @State private var certificates: [Certificate] = []
+    @StateObject private var certificateService = CertificateService.shared
     @State private var isLoading = false
+    
+    private var certificates: [Certificate] {
+        certificateService.certificates
+    }
     
     var body: some View {
         NavigationView {
@@ -52,7 +56,7 @@ struct CertificatesView: View {
     
     private func loadCertificates() async {
         isLoading = true
-        // Load certificates
+        await certificateService.loadCertificates()
         isLoading = false
     }
 }
