@@ -12,7 +12,7 @@ import SwiftData
 struct BrainRushApp: App {
     var sharedModelContainer: ModelContainer = {
         let schema = Schema([
-            Item.self,
+            UserProfile.self,
         ])
         let modelConfiguration = ModelConfiguration(schema: schema, isStoredInMemoryOnly: false)
 
@@ -25,7 +25,13 @@ struct BrainRushApp: App {
 
     var body: some Scene {
         WindowGroup {
-            ContentView()
+            RootView()
+                .onOpenURL { url in
+                    // Handle deep links
+                    if let route = DeepLinkRouter.shared.handleUniversalLink(url) ?? DeepLinkRouter.shared.handleCustomURL(url) {
+                        // Navigate to route (would need navigation state management)
+                    }
+                }
         }
         .modelContainer(sharedModelContainer)
     }
