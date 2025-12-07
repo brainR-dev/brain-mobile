@@ -51,6 +51,10 @@ struct ProfileSettingsView: View {
                 }
                 
                 Section("Preferences") {
+                    NavigationLink("Language") {
+                        LanguageSelectionView()
+                    }
+                    
                     NavigationLink("Notification Settings") {
                         NotificationSettingsView()
                     }
@@ -336,6 +340,65 @@ struct AppearanceSettingsView: View {
         .navigationTitle("Appearance")
         .task {
             AnalyticsService.shared.trackScreen("appearance_settings")
+        }
+    }
+}
+
+struct LanguageSelectionView: View {
+    @StateObject private var languageService = LanguageService.shared
+    @Environment(\.dismiss) private var dismiss
+    
+    var body: some View {
+        List {
+            Section {
+                ForEach(Language.supportedLanguages) { language in
+                    Button {
+                        Task { @MainActor in
+                            languageService.setLanguage(language.code)
+                        }
+                    } label: {
+                        HStack {
+                            if let flag = language.flag {
+                                Text(flag)
+                                    .font(.title2)
+                            }
+                            
+                            VStack(alignment: .leading, spacing: 2) {
+                                Text(language.nativeName)
+                                    .foregroundColor(.primary)
+                                Text(language.name)
+                                    .font(.caption)
+                                    .foregroundColor(.secondary)
+                            }
+                            
+                            Spacer()
+                            
+                            if languageService.currentLanguage == language.code {
+                                Image(systemName: "checkmark")
+                                    .foregroundColor(.blue)
+                                    .font(.headline)
+                            }
+                        }
+                        .contentShape(Rectangle())
+                    }
+                    .buttonStyle(PlainButtonStyle())
+                }
+            } header: {
+                Text("Select Language")
+            } footer: {
+                Text("Choose your preferred language for the app interface. Content may still be in English.")
+            }
+        }
+        .navigationTitle("Language")
+        .navigationBarTitleDisplayMode(.inline)
+        .task {
+            AnalyticsService.shared.trackScreen("language_selection")
+        }
+        .onChange(of: languageService.currentLanguage) { _ in
+            // UI will update automatically via @StateObject
+            AnalyticsService.shared.track("language_changed_from_settings", properties: [
+                "language": languageService.currentLanguage
+            ])
         }
     }
 }

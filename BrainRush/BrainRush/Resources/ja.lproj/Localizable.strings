@@ -1,0 +1,54 @@
+/* 
+  Localizable.strings
+  BrainRush (Japanese)
+  
+  日本語ローカライズ文字列
+*/
+
+/* Common */
+"common.ok" = "OK";
+"common.cancel" = "キャンセル";
+"common.save" = "保存";
+"common.delete" = "削除";
+"common.edit" = "編集";
+"common.done" = "完了";
+"common.next" = "次へ";
+"common.back" = "戻る";
+"common.close" = "閉じる";
+"common.loading" = "読み込み中...";
+"common.error" = "エラー";
+"common.retry" = "再試行";
+"common.search" = "検索";
+
+/* Auth */
+"auth.sign_in" = "サインイン";
+"auth.sign_up" = "サインアップ";
+"auth.sign_out" = "サインアウト";
+"auth.email" = "メールアドレス";
+"auth.password" = "パスワード";
+"auth.forgot_password" = "パスワードを忘れた場合";
+"auth.create_account" = "アカウントを作成";
+"auth.already_have_account" = "すでにアカウントをお持ちですか？";
+
+/* Dashboard */
+"dashboard.title" = "ダッシュボード";
+"dashboard.continue_learning" = "学習を続ける";
+"dashboard.my_courses" = "マイコース";
+"dashboard.recommendations" = "おすすめ";
+
+/* Courses */
+"courses.title" = "コース";
+"courses.enroll" = "登録する";
+"courses.enrolled" = "登録済み";
+"courses.lessons" = "レッスン";
+
+/* Settings */
+"settings.title" = "設定";
+"settings.language" = "言語";
+"settings.select_language" = "言語を選択";
+"settings.profile" = "プロフィール";
+
+/* Errors */
+"error.network" = "ネットワークエラー";
+"error.server" = "サーバーエラー";
+"error.unknown" = "不明なエラーが発生しました";

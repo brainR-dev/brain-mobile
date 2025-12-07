@@ -1,0 +1,55 @@
+/* 
+  Localizable.strings
+  BrainRush (English - Base)
+  
+  Base English localization strings. All other languages should include these keys.
+*/
+
+/* Common */
+"common.ok" = "OK";
+"common.cancel" = "Cancel";
+"common.save" = "Save";
+"common.delete" = "Delete";
+"common.edit" = "Edit";
+"common.done" = "Done";
+"common.next" = "Next";
+"common.back" = "Back";
+"common.close" = "Close";
+"common.loading" = "Loading...";
+"common.error" = "Error";
+"common.retry" = "Retry";
+"common.search" = "Search";
+
+/* Auth */
+"auth.sign_in" = "Sign In";
+"auth.sign_up" = "Sign Up";
+"auth.sign_out" = "Sign Out";
+"auth.email" = "Email";
+"auth.password" = "Password";
+"auth.forgot_password" = "Forgot Password?";
+"auth.create_account" = "Create Account";
+"auth.already_have_account" = "Already have an account?";
+
+/* Dashboard */
+"dashboard.title" = "Dashboard";
+"dashboard.continue_learning" = "Continue Learning";
+"dashboard.my_courses" = "My Courses";
+"dashboard.recommendations" = "Recommendations";
+
+/* Courses */
+"courses.title" = "Courses";
+"courses.enroll" = "Enroll";
+"courses.enrolled" = "Enrolled";
+"courses.lessons" = "Lessons";
+
+/* Settings */
+"settings.title" = "Settings";
+"settings.language" = "Language";
+"settings.select_language" = "Select Language";
+"settings.profile" = "Profile";
+
+/* Errors */
+"error.network" = "Network Error";
+"error.server" = "Server Error";
+"error.unknown" = "An unknown error occurred";
+

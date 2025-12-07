@@ -1,0 +1,54 @@
+/* 
+  Localizable.strings
+  BrainRush (Hindi)
+  
+  हिंदी स्थानीयकरण स्ट्रिंग
+*/
+
+/* Common */
+"common.ok" = "ठीक है";
+"common.cancel" = "रद्द करें";
+"common.save" = "सहेजें";
+"common.delete" = "हटाएं";
+"common.edit" = "संपादित करें";
+"common.done" = "पूर्ण";
+"common.next" = "अगला";
+"common.back" = "वापस";
+"common.close" = "बंद करें";
+"common.loading" = "लोड हो रहा है...";
+"common.error" = "त्रुटि";
+"common.retry" = "पुन: प्रयास करें";
+"common.search" = "खोजें";
+
+/* Auth */
+"auth.sign_in" = "साइन इन करें";
+"auth.sign_up" = "साइन अप करें";
+"auth.sign_out" = "साइन आउट करें";
+"auth.email" = "ईमेल";
+"auth.password" = "पासवर्ड";
+"auth.forgot_password" = "पासवर्ड भूल गए?";
+"auth.create_account" = "खाता बनाएं";
+"auth.already_have_account" = "पहले से खाता है?";
+
+/* Dashboard */
+"dashboard.title" = "डैशबोर्ड";
+"dashboard.continue_learning" = "सीखना जारी रखें";
+"dashboard.my_courses" = "मेरे पाठ्यक्रम";
+"dashboard.recommendations" = "सिफारिशें";
+
+/* Courses */
+"courses.title" = "पाठ्यक्रम";
+"courses.enroll" = "नामांकन करें";
+"courses.enrolled" = "नामांकित";
+"courses.lessons" = "पाठ";
+
+/* Settings */
+"settings.title" = "सेटिंग्स";
+"settings.language" = "भाषा";
+"settings.select_language" = "भाषा चुनें";
+"settings.profile" = "प्रोफ़ाइल";
+
+/* Errors */
+"error.network" = "नेटवर्क त्रुटि";
+"error.server" = "सर्वर त्रुटि";
+"error.unknown" = "एक अज्ञात त्रुटि हुई";

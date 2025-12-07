@@ -1,0 +1,54 @@
+/* 
+  Localizable.strings
+  BrainRush (Arabic)
+  
+  سلاسل التوطين العربية
+*/
+
+/* Common */
+"common.ok" = "موافق";
+"common.cancel" = "إلغاء";
+"common.save" = "حفظ";
+"common.delete" = "حذف";
+"common.edit" = "تعديل";
+"common.done" = "تم";
+"common.next" = "التالي";
+"common.back" = "رجوع";
+"common.close" = "إغلاق";
+"common.loading" = "جاري التحميل...";
+"common.error" = "خطأ";
+"common.retry" = "إعادة المحاولة";
+"common.search" = "بحث";
+
+/* Auth */
+"auth.sign_in" = "تسجيل الدخول";
+"auth.sign_up" = "إنشاء حساب";
+"auth.sign_out" = "تسجيل الخروج";
+"auth.email" = "البريد الإلكتروني";
+"auth.password" = "كلمة المرور";
+"auth.forgot_password" = "نسيت كلمة المرور؟";
+"auth.create_account" = "إنشاء حساب";
+"auth.already_have_account" = "هل لديك حساب بالفعل؟";
+
+/* Dashboard */
+"dashboard.title" = "لوحة التحكم";
+"dashboard.continue_learning" = "متابعة التعلم";
+"dashboard.my_courses" = "دوراتي";
+"dashboard.recommendations" = "التوصيات";
+
+/* Courses */
+"courses.title" = "الدورات";
+"courses.enroll" = "التسجيل";
+"courses.enrolled" = "مسجل";
+"courses.lessons" = "الدروس";
+
+/* Settings */
+"settings.title" = "الإعدادات";
+"settings.language" = "اللغة";
+"settings.select_language" = "اختر اللغة";
+"settings.profile" = "الملف الشخصي";
+
+/* Errors */
+"error.network" = "خطأ في الشبكة";
+"error.server" = "خطأ في الخادم";
+"error.unknown" = "حدث خطأ غير معروف";

@@ -1,0 +1,54 @@
+/* 
+  Localizable.strings
+  BrainRush (Chinese Simplified)
+  
+  简体中文本地化字符串
+*/
+
+/* Common */
+"common.ok" = "确定";
+"common.cancel" = "取消";
+"common.save" = "保存";
+"common.delete" = "删除";
+"common.edit" = "编辑";
+"common.done" = "完成";
+"common.next" = "下一步";
+"common.back" = "返回";
+"common.close" = "关闭";
+"common.loading" = "加载中...";
+"common.error" = "错误";
+"common.retry" = "重试";
+"common.search" = "搜索";
+
+/* Auth */
+"auth.sign_in" = "登录";
+"auth.sign_up" = "注册";
+"auth.sign_out" = "登出";
+"auth.email" = "电子邮件";
+"auth.password" = "密码";
+"auth.forgot_password" = "忘记密码？";
+"auth.create_account" = "创建账户";
+"auth.already_have_account" = "已有账户？";
+
+/* Dashboard */
+"dashboard.title" = "仪表板";
+"dashboard.continue_learning" = "继续学习";
+"dashboard.my_courses" = "我的课程";
+"dashboard.recommendations" = "推荐";
+
+/* Courses */
+"courses.title" = "课程";
+"courses.enroll" = "报名";
+"courses.enrolled" = "已报名";
+"courses.lessons" = "课程";
+
+/* Settings */
+"settings.title" = "设置";
+"settings.language" = "语言";
+"settings.select_language" = "选择语言";
+"settings.profile" = "个人资料";
+
+/* Errors */
+"error.network" = "网络错误";
+"error.server" = "服务器错误";
+"error.unknown" = "发生未知错误";

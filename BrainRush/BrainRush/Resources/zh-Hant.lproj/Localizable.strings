@@ -1,0 +1,54 @@
+/* 
+  Localizable.strings
+  BrainRush (Chinese Traditional)
+  
+  繁體中文本地化字串
+*/
+
+/* Common */
+"common.ok" = "確定";
+"common.cancel" = "取消";
+"common.save" = "儲存";
+"common.delete" = "刪除";
+"common.edit" = "編輯";
+"common.done" = "完成";
+"common.next" = "下一步";
+"common.back" = "返回";
+"common.close" = "關閉";
+"common.loading" = "載入中...";
+"common.error" = "錯誤";
+"common.retry" = "重試";
+"common.search" = "搜尋";
+
+/* Auth */
+"auth.sign_in" = "登入";
+"auth.sign_up" = "註冊";
+"auth.sign_out" = "登出";
+"auth.email" = "電子郵件";
+"auth.password" = "密碼";
+"auth.forgot_password" = "忘記密碼？";
+"auth.create_account" = "建立帳戶";
+"auth.already_have_account" = "已有帳戶？";
+
+/* Dashboard */
+"dashboard.title" = "儀表板";
+"dashboard.continue_learning" = "繼續學習";
+"dashboard.my_courses" = "我的課程";
+"dashboard.recommendations" = "推薦";
+
+/* Courses */
+"courses.title" = "課程";
+"courses.enroll" = "報名";
+"courses.enrolled" = "已報名";
+"courses.lessons" = "課程";
+
+/* Settings */
+"settings.title" = "設定";
+"settings.language" = "語言";
+"settings.select_language" = "選擇語言";
+"settings.profile" = "個人資料";
+
+/* Errors */
+"error.network" = "網路錯誤";
+"error.server" = "伺服器錯誤";
+"error.unknown" = "發生未知錯誤";

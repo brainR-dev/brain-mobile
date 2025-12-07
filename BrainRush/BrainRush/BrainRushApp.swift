@@ -30,6 +30,11 @@ struct BrainRushApp: App {
         // Initialize analytics on app launch
         _ = AnalyticsService.shared
         
+        // Initialize language service (detects system language on first launch)
+        Task { @MainActor in
+            _ = LanguageService.shared
+        }
+        
         // Initialize push notifications
         Task {
             await PushNotificationService.shared.requestAuthorization()

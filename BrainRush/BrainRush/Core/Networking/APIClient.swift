@@ -43,6 +43,32 @@ class APIClient {
         self.session = URLSession(configuration: config)
     }
     
+    // MARK: - URL Building
+    
+    private func buildURL(endpoint: String) throws -> URL {
+        guard var urlComponents = URLComponents(string: "\(baseURL)\(endpoint)") else {
+            throw APIError.invalidURL
+        }
+        
+        // Add language query parameter
+        let currentLanguage = LanguageService.shared.currentLanguage
+        var queryItems = urlComponents.queryItems ?? []
+        
+        // Remove existing lang parameter if present
+        queryItems.removeAll { $0.name == "lang" }
+        
+        // Add language parameter
+        queryItems.append(URLQueryItem(name: "lang", value: currentLanguage))
+        
+        urlComponents.queryItems = queryItems.isEmpty ? nil : queryItems
+        
+        guard let url = urlComponents.url else {
+            throw APIError.invalidURL
+        }
+        
+        return url
+    }
+    
     func request<T: Codable>(
         endpoint: String,
         method: String = "GET",
@@ -50,9 +76,8 @@ class APIClient {
         headers: [String: String]? = nil,
         accessToken: String? = nil
     ) async throws -> T {
-        guard let url = URL(string: "\(baseURL)\(endpoint)") else {
-            throw APIError.invalidURL
-        }
+        // Build URL with language query parameter
+        let url = try buildURL(endpoint: endpoint)
         
         var request = URLRequest(url: url)
         request.httpMethod = method
@@ -61,6 +86,10 @@ class APIClient {
         request.setValue("application/json", forHTTPHeaderField: "Content-Type")
         request.setValue(AppConfig.bundleID, forHTTPHeaderField: "X-Client-App")
         request.setValue("ios", forHTTPHeaderField: "X-Platform")
+        
+        // Add language header
+        let currentLanguage = LanguageService.shared.currentLanguage
+        request.setValue(currentLanguage, forHTTPHeaderField: "X-Language")
         
         // Add auth token if provided
         if let token = accessToken {

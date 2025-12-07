@@ -1,0 +1,54 @@
+/* 
+  Localizable.strings
+  BrainRush (German)
+  
+  Deutsche Lokalisierungszeichenfolgen
+*/
+
+/* Common */
+"common.ok" = "OK";
+"common.cancel" = "Abbrechen";
+"common.save" = "Speichern";
+"common.delete" = "Löschen";
+"common.edit" = "Bearbeiten";
+"common.done" = "Fertig";
+"common.next" = "Weiter";
+"common.back" = "Zurück";
+"common.close" = "Schließen";
+"common.loading" = "Wird geladen...";
+"common.error" = "Fehler";
+"common.retry" = "Wiederholen";
+"common.search" = "Suchen";
+
+/* Auth */
+"auth.sign_in" = "Anmelden";
+"auth.sign_up" = "Registrieren";
+"auth.sign_out" = "Abmelden";
+"auth.email" = "E-Mail";
+"auth.password" = "Passwort";
+"auth.forgot_password" = "Passwort vergessen?";
+"auth.create_account" = "Konto erstellen";
+"auth.already_have_account" = "Haben Sie bereits ein Konto?";
+
+/* Dashboard */
+"dashboard.title" = "Dashboard";
+"dashboard.continue_learning" = "Lernen fortsetzen";
+"dashboard.my_courses" = "Meine Kurse";
+"dashboard.recommendations" = "Empfehlungen";
+
+/* Courses */
+"courses.title" = "Kurse";
+"courses.enroll" = "Einschreiben";
+"courses.enrolled" = "Eingeschrieben";
+"courses.lessons" = "Lektionen";
+
+/* Settings */
+"settings.title" = "Einstellungen";
+"settings.language" = "Sprache";
+"settings.select_language" = "Sprache auswählen";
+"settings.profile" = "Profil";
+
+/* Errors */
+"error.network" = "Netzwerkfehler";
+"error.server" = "Serverfehler";
+"error.unknown" = "Ein unbekannter Fehler ist aufgetreten";

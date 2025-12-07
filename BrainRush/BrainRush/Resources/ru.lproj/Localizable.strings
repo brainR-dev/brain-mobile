@@ -1,0 +1,54 @@
+/* 
+  Localizable.strings
+  BrainRush (Russian)
+  
+  Русские строки локализации
+*/
+
+/* Common */
+"common.ok" = "ОК";
+"common.cancel" = "Отмена";
+"common.save" = "Сохранить";
+"common.delete" = "Удалить";
+"common.edit" = "Редактировать";
+"common.done" = "Готово";
+"common.next" = "Далее";
+"common.back" = "Назад";
+"common.close" = "Закрыть";
+"common.loading" = "Загрузка...";
+"common.error" = "Ошибка";
+"common.retry" = "Повторить";
+"common.search" = "Поиск";
+
+/* Auth */
+"auth.sign_in" = "Войти";
+"auth.sign_up" = "Зарегистрироваться";
+"auth.sign_out" = "Выйти";
+"auth.email" = "Электронная почта";
+"auth.password" = "Пароль";
+"auth.forgot_password" = "Забыли пароль?";
+"auth.create_account" = "Создать аккаунт";
+"auth.already_have_account" = "Уже есть аккаунт?";
+
+/* Dashboard */
+"dashboard.title" = "Панель управления";
+"dashboard.continue_learning" = "Продолжить обучение";
+"dashboard.my_courses" = "Мои курсы";
+"dashboard.recommendations" = "Рекомендации";
+
+/* Courses */
+"courses.title" = "Курсы";
+"courses.enroll" = "Записаться";
+"courses.enrolled" = "Записан";
+"courses.lessons" = "Уроки";
+
+/* Settings */
+"settings.title" = "Настройки";
+"settings.language" = "Язык";
+"settings.select_language" = "Выбрать язык";
+"settings.profile" = "Профиль";
+
+/* Errors */
+"error.network" = "Ошибка сети";
+"error.server" = "Ошибка сервера";
+"error.unknown" = "Произошла неизвестная ошибка";
