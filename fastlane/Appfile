@@ -1,0 +1,9 @@
+# Appfile for BrainRush iOS App
+
+app_identifier("com.brainrash.BrainRush")
+apple_id("your-apple-id@example.com") # Update with your Apple ID
+team_id("86M37DST2Z") # Update with your team ID
+
+# For App Store Connect API
+# issuer_id("your-issuer-id")
+# api_key_path("./AuthKey_XXXXXXXX.p8")

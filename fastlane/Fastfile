@@ -1,0 +1,123 @@
+# Fastfile for BrainRush iOS App
+
+default_platform(:ios)
+
+platform :ios do
+  desc "Run tests"
+  lane :test do
+    run_tests(
+      workspace: "BrainRush/BrainRush.xcworkspace",
+      scheme: "BrainRush",
+      device: "iPhone 15 Pro",
+      code_coverage: true
+    )
+  end
+
+  desc "Build the app"
+  lane :build do
+    build_app(
+      workspace: "BrainRush/BrainRush.xcworkspace",
+      scheme: "BrainRush",
+      export_method: "app-store",
+      export_options: {
+        method: "app-store",
+        uploadBitcode: false,
+        uploadSymbols: true,
+        compileBitcode: false
+      }
+    )
+  end
+
+  desc "Build and upload to TestFlight"
+  lane :beta do
+    # Increment build number
+    increment_build_number(
+      xcodeproj: "BrainRush/BrainRush.xcodeproj"
+    )
+    
+    # Build and upload
+    build_app(
+      workspace: "BrainRush/BrainRush.xcworkspace",
+      scheme: "BrainRush",
+      export_method: "app-store",
+      export_options: {
+        method: "app-store",
+        uploadBitcode: false,
+        uploadSymbols: true,
+        compileBitcode: false
+      }
+    )
+    
+    upload_to_testflight(
+      skip_waiting_for_build_processing: true,
+      skip_submission: true,
+      distribute_external: false
+    )
+  end
+
+  desc "Release to App Store"
+  lane :release do
+    # Ensure we're on main branch
+    ensure_git_branch(branch: "main")
+    
+    # Increment version and build number
+    increment_version_number(
+      xcodeproj: "BrainRush/BrainRush.xcodeproj",
+      version_number: ENV["VERSION_NUMBER"]
+    )
+    
+    increment_build_number(
+      xcodeproj: "BrainRush/BrainRush.xcodeproj"
+    )
+    
+    # Build and upload
+    build_app(
+      workspace: "BrainRush/BrainRush.xcworkspace",
+      scheme: "BrainRush",
+      export_method: "app-store",
+      export_options: {
+        method: "app-store",
+        uploadBitcode: false,
+        uploadSymbols: true,
+        compileBitcode: false
+      }
+    )
+    
+    # Submit for review
+    upload_to_app_store(
+      skip_metadata: false,
+      skip_screenshots: false,
+      submit_for_review: true,
+      automatic_release: false
+    )
+  end
+
+  desc "Run code quality checks"
+  lane :lint do
+    if system("which swiftlint")
+      swiftlint(
+        mode: :lint,
+        executable: "swiftlint",
+        strict: false,
+        ignore_exit_status: true
+      )
+    else
+      UI.important("SwiftLint not installed. Install with: brew install swiftlint")
+    end
+  end
+
+  desc "Generate screenshots"
+  lane :screenshots do
+    capture_screenshots(
+      workspace: "BrainRush/BrainRush.xcworkspace",
+      scheme: "BrainRush"
+    )
+  end
+
+  desc "Clean build artifacts"
+  lane :clean do
+    clean_build_artifacts
+    sh("rm -rf ~/Library/Developer/Xcode/DerivedData/*")
+    sh("rm -rf build/")
+  end
+end

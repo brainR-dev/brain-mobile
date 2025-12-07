@@ -1,0 +1,108 @@
+name: Release
+
+on:
+  push:
+    tags:
+      - 'v*.*.*'
+  workflow_dispatch:
+    inputs:
+      version:
+        description: 'Version number (e.g., 1.0.0)'
+        required: true
+        type: string
+
+jobs:
+  build-and-archive:
+    name: Build and Archive
+    runs-on: macos-15
+    
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+      
+      - name: Select Xcode Version
+        run: sudo xcode-select -s /Applications/Xcode_16.2.app || sudo xcode-select -s /Applications/Xcode_16.1.app || sudo xcode-select -s /Applications/Xcode_16.0.app || sudo xcode-select -s /Applications/Xcode_15.4.app || sudo xcode-select -s /Applications/Xcode_15.3.app || sudo xcode-select -s /Applications/Xcode_15.2.app || sudo xcode-select -s /Applications/Xcode_15.1.app || sudo xcode-select -s /Applications/Xcode_15.0.app
+      
+      - name: Show Xcode Version
+        run: xcodebuild -version
+      
+      - name: Set Version
+        id: version
+        run: |
+          if [ "${{ github.event_name }}" == "workflow_dispatch" ]; then
+            echo "VERSION=${{ github.event.inputs.version }}" >> $GITHUB_ENV
+          else
+            VERSION=${GITHUB_REF#refs/tags/v}
+            echo "VERSION=$VERSION" >> $GITHUB_ENV
+          fi
+          echo "Version: $VERSION"
+      
+      - name: Create Archive
+        run: |
+          xcodebuild archive \
+            -project BrainRush/BrainRush.xcodeproj \
+            -scheme BrainRush \
+            -archivePath ./build/BrainRush.xcarchive \
+            -configuration Release \
+            -destination 'generic/platform=iOS' \
+            CODE_SIGN_IDENTITY="Apple Development" \
+            CODE_SIGNING_REQUIRED=YES \
+            CODE_SIGNING_ALLOWED=YES \
+            MARKETING_VERSION="$VERSION" \
+            CURRENT_PROJECT_VERSION="${{ github.run_number }}"
+      
+      - name: Export IPA
+        run: |
+          xcodebuild -exportArchive \
+            -archivePath ./build/BrainRush.xcarchive \
+            -exportPath ./build/export \
+            -exportOptionsPlist .github/ExportOptions.plist
+      
+      - name: Upload IPA
+        uses: actions/upload-artifact@v4
+        with:
+          name: BrainRush-${{ env.VERSION }}-${{ github.run_number }}.ipa
+          path: ./build/export/*.ipa
+          retention-days: 30
+      
+      - name: Upload dSYM
+        uses: actions/upload-artifact@v4
+        with:
+          name: BrainRush-${{ env.VERSION }}-${{ github.run_number }}.dSYM.zip
+          path: ./build/BrainRush.xcarchive/dSYMs/*.dSYM
+          retention-days: 30
+      
+      - name: Create GitHub Release
+        if: startsWith(github.ref, 'refs/tags/')
+        uses: softprops/action-gh-release@v1
+        with:
+          files: |
+            ./build/export/*.ipa
+          draft: false
+          prerelease: false
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+  testflight:
+    name: Upload to TestFlight
+    runs-on: macos-15
+    needs: build-and-archive
+    if: github.ref == 'refs/heads/main' || startsWith(github.ref, 'refs/tags/')
+    
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+      
+      - name: Download IPA
+        uses: actions/download-artifact@v4
+        with:
+          name: BrainRush-${{ env.VERSION }}-${{ github.run_number }}.ipa
+          path: ./build/export
+      
+      - name: Upload to TestFlight
+        uses: apple-actions/upload-testflight-build@v1
+        with:
+          app-path: ./build/export/*.ipa
+          issuer-id: ${{ secrets.APPSTORE_ISSUER_ID }}
+          api-key-id: ${{ secrets.APPSTORE_API_KEY_ID }}
+          api-private-key: ${{ secrets.APPSTORE_API_PRIVATE_KEY }}

@@ -1,0 +1,161 @@
+name: CI
+
+on:
+  push:
+    branches: [ main, develop ]
+  pull_request:
+    branches: [ main, develop ]
+
+jobs:
+  build-and-test:
+    name: Build and Test
+    runs-on: macos-15
+    
+    strategy:
+      matrix:
+        destination:
+          - platform: iOS Simulator,name: iPhone 15 Pro,OS: latest
+          - platform: iOS Simulator,name: iPhone 15,OS: latest
+    
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+      
+      - name: Select Xcode Version
+        run: |
+          if [ -d "/Applications/Xcode_16.2.app" ]; then
+            sudo xcode-select -s /Applications/Xcode_16.2.app
+          elif [ -d "/Applications/Xcode_16.1.app" ]; then
+            sudo xcode-select -s /Applications/Xcode_16.1.app
+          elif [ -d "/Applications/Xcode_16.0.app" ]; then
+            sudo xcode-select -s /Applications/Xcode_16.0.app
+          elif [ -d "/Applications/Xcode_15.4.app" ]; then
+            sudo xcode-select -s /Applications/Xcode_15.4.app
+          elif [ -d "/Applications/Xcode_15.3.app" ]; then
+            sudo xcode-select -s /Applications/Xcode_15.3.app
+          elif [ -d "/Applications/Xcode_15.2.app" ]; then
+            sudo xcode-select -s /Applications/Xcode_15.2.app
+          elif [ -d "/Applications/Xcode_15.1.app" ]; then
+            sudo xcode-select -s /Applications/Xcode_15.1.app
+          elif [ -d "/Applications/Xcode_15.0.app" ]; then
+            sudo xcode-select -s /Applications/Xcode_15.0.app
+          else
+            echo "No suitable Xcode version found"
+            exit 1
+          fi
+      
+      - name: Show Xcode Version
+        run: xcodebuild -version
+      
+      - name: Show Swift Version
+        run: swift --version
+      
+      - name: Cache Swift Package Manager
+        uses: actions/cache@v4
+        with:
+          path: .build
+          key: ${{ runner.os }}-spm-${{ hashFiles('**/Package.resolved') }}
+          restore-keys: |
+            ${{ runner.os }}-spm-
+      
+      - name: Cache DerivedData
+        uses: actions/cache@v4
+        with:
+          path: ~/Library/Developer/Xcode/DerivedData
+          key: ${{ runner.os }}-deriveddata-${{ hashFiles('BrainRush/BrainRush.xcodeproj/project.pbxproj') }}
+          restore-keys: |
+            ${{ runner.os }}-deriveddata-
+      
+      - name: List Available Simulators
+        run: xcrun simctl list devices available
+      
+      - name: Build Project
+        run: |
+          xcodebuild clean build \
+            -project BrainRush/BrainRush.xcodeproj \
+            -scheme BrainRush \
+            -destination "${{ matrix.destination }}" \
+            -configuration Debug \
+            CODE_SIGN_IDENTITY="" \
+            CODE_SIGNING_REQUIRED=NO \
+            CODE_SIGNING_ALLOWED=NO
+      
+      - name: Run Unit Tests
+        run: |
+          xcodebuild test \
+            -project BrainRush/BrainRush.xcodeproj \
+            -scheme BrainRush \
+            -destination "${{ matrix.destination }}" \
+            -configuration Debug \
+            -only-testing:BrainRushTests \
+            CODE_SIGN_IDENTITY="" \
+            CODE_SIGNING_REQUIRED=NO \
+            CODE_SIGNING_ALLOWED=NO
+
+  lint:
+    name: Swift Lint
+    runs-on: macos-15
+    
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+      
+      - name: Install SwiftLint
+        run: |
+          if ! command -v swiftlint &> /dev/null; then
+            brew install swiftlint || echo "SwiftLint installation failed, skipping"
+          fi
+      
+      - name: Run SwiftLint
+        run: |
+          if command -v swiftlint &> /dev/null; then
+            swiftlint lint --strict || true
+          else
+            echo "SwiftLint not available, skipping lint step"
+          fi
+        continue-on-error: true
+
+  ui-tests:
+    name: UI Tests
+    runs-on: macos-15
+    needs: build-and-test
+    
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+      
+      - name: Select Xcode Version
+        run: |
+          if [ -d "/Applications/Xcode_16.2.app" ]; then
+            sudo xcode-select -s /Applications/Xcode_16.2.app
+          elif [ -d "/Applications/Xcode_16.1.app" ]; then
+            sudo xcode-select -s /Applications/Xcode_16.1.app
+          elif [ -d "/Applications/Xcode_16.0.app" ]; then
+            sudo xcode-select -s /Applications/Xcode_16.0.app
+          elif [ -d "/Applications/Xcode_15.4.app" ]; then
+            sudo xcode-select -s /Applications/Xcode_15.4.app
+          elif [ -d "/Applications/Xcode_15.3.app" ]; then
+            sudo xcode-select -s /Applications/Xcode_15.3.app
+          elif [ -d "/Applications/Xcode_15.2.app" ]; then
+            sudo xcode-select -s /Applications/Xcode_15.2.app
+          elif [ -d "/Applications/Xcode_15.1.app" ]; then
+            sudo xcode-select -s /Applications/Xcode_15.1.app
+          elif [ -d "/Applications/Xcode_15.0.app" ]; then
+            sudo xcode-select -s /Applications/Xcode_15.0.app
+          fi
+      
+      - name: Boot Simulator
+        run: |
+          xcrun simctl boot "iPhone 15 Pro" || true
+          sleep 5
+      
+      - name: Run UI Tests
+        run: |
+          xcodebuild test \
+            -project BrainRush/BrainRush.xcodeproj \
+            -scheme BrainRush \
+            -destination 'platform=iOS Simulator,name=iPhone 15 Pro,OS=latest' \
+            -only-testing:BrainRushUITests \
+            CODE_SIGN_IDENTITY="" \
+            CODE_SIGNING_REQUIRED=NO \
+            CODE_SIGNING_ALLOWED=NO
